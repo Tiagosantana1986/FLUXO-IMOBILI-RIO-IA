@@ -13,7 +13,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.5; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .tab-bar { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
+        .tab-bar { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; }
         .tab-btn { background: white; border: 1px solid #e2e8f0; padding: 14px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #475569; }
         .tab-btn.active { background: #1e4b6e; color: white; border-color: #1e4b6e; box-shadow: 0 10px 20px -5px rgba(30,75,110,0.3); }
         .tab-content { display: none; }
@@ -46,7 +46,7 @@
         .footer-contact { background: #0b1e33; color: white; border-radius: 36px; padding: 30px 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
 
         .calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .calculator-container { background: white; border-radius: 36px; padding: 30px; box-shadow: 0 20px 30px -8px rgba(0,0,0,0.04); border: 1px solid #eef2f8; }
+        .calculator-container, .invest-card, .campaign-card { background: white; border-radius: 36px; padding: 30px; box-shadow: 0 20px 30px -8px rgba(0,0,0,0.04); border: 1px solid #eef2f8; }
         .input-group { margin-bottom: 22px; }
         label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-bottom: 8px; display: block; }
         input, select, textarea { width: 100%; padding: 14px 18px; background: #fafcff; border: 1.5px solid #e2e8f0; border-radius: 24px; font-size: 1rem; outline: none; }
@@ -66,7 +66,6 @@
         .evolucao-table th { background: #1e293b; color: white; padding: 12px 8px; position: sticky; top: 0; text-align: right; }
         .evolucao-table td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; }
 
-        .campaign-card { background: white; border-radius: 32px; padding: 32px; box-shadow: 0 20px 30px -8px rgba(0,0,0,0.04); }
         .result-content { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.7; color: #1e293b; background: #f0f6fe; border-radius: 24px; padding: 24px; }
 
         @media (max-width: 768px) {
@@ -74,6 +73,7 @@
             .features { grid-template-columns: 1fr; }
             .double-row, .triple-row, .street-row { grid-template-columns: 1fr; }
             .about-grid { flex-direction: column; text-align: center; }
+            .tab-btn { padding: 12px 20px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -82,14 +82,16 @@
     <div class="hero">
         <span class="hero-badge">SIMULADOR DE FLUXO IMOBILIÁRIO</span>
         <h1>Transforme simulações em <span>negócios fechados</span></h1>
-        <p>Calcule cenários complexos e gere campanhas de marketing com inteligência artificial.</p>
+        <p>Calcule cenários complexos, planeje investimentos em mídia e gere campanhas com inteligência artificial.</p>
     </div>
 
     <div class="tab-bar">
-        <button class="tab-btn active" data-tab="simulador"><i class="fas fa-calculator"></i> Simulador de Fluxo</button>
-        <button class="tab-btn" data-tab="campanha"><i class="fas fa-robot"></i> Gerador de Campanha IA</button>
+        <button class="tab-btn active" data-tab="simulador"><i class="fas fa-calculator"></i> Simulador</button>
+        <button class="tab-btn" data-tab="investir"><i class="fas fa-chart-line"></i> Onde Investir</button>
+        <button class="tab-btn" data-tab="campanha"><i class="fas fa-robot"></i> Gerador de Campanha</button>
     </div>
 
+    <!-- ABA SIMULADOR (mantida igual) -->
     <div id="tab-simulador" class="tab-content active">
         <div class="calculator-container">
             <h3 style="margin-bottom: 20px; color: #1e4b6e;">Dados do Cliente</h3>
@@ -118,7 +120,7 @@
             <div class="input-group"><label>🏢 Nome do Empreendimento</label><input type="text" id="nomeEmpreendimento" value="RESIDENCIAL MADRID"></div>
 
             <div class="double-row">
-                <div class="input-group"><label>💰 Valor do Imóvel (R$)</label><input type="text" id="valorImovel" class="moeda" value="100.000,00"></div>
+                <div class="input-group"><label>💰 Valor do Imóvel (R$)</label><input type="text" id="valorImovel" class="moeda" value="200.000,00"></div>
                 <div class="input-group"><label>🤝 Sinal / Ato (R$)</label><input type="text" id="sinalAto" class="moeda" value="1.000,00"></div>
             </div>
 
@@ -157,6 +159,23 @@
         </div>
     </div>
 
+    <!-- NOVA ABA: ONDE INVESTIR -->
+    <div id="tab-investir" class="tab-content">
+        <div class="invest-card">
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-chart-pie" style="color:#c6993b;"></i> Planejamento de Mídia Inteligente</h3>
+            <form id="investForm">
+                <div class="double-row">
+                    <div class="input-group"><label>Valor do Imóvel (R$)</label><input type="text" id="invValorImovel" class="moeda" value="200.000,00" required></div>
+                    <div class="input-group"><label>Cidade/UF</label><input type="text" id="invLocalizacao" value="Arapongas/PR" required></div>
+                </div>
+                <div class="input-group"><label>Orçamento disponível (R$) - opcional</label><input type="text" id="invOrcamento" class="moeda" placeholder="Ex: 1000,00"></div>
+                <button type="submit" class="btn" id="generateInvestBtn"><i class="fas fa-search-dollar"></i> Analisar Melhores Canais</button>
+            </form>
+            <div id="investResult" style="display:none;" class="result-content"></div>
+        </div>
+    </div>
+
+    <!-- ABA GERADOR DE CAMPANHA (mantida) -->
     <div id="tab-campanha" class="tab-content">
         <div class="campaign-card">
             <h3 style="margin-bottom: 20px;"><i class="fas fa-robot" style="color:#c6993b;"></i> Gerar Campanha com IA</h3>
@@ -165,7 +184,7 @@
                 <div class="input-group"><label>Características</label><textarea id="caracteristicas" rows="3" required>43m², 2 quartos, sala, cozinha, banheiro, salão de festas, piscina</textarea></div>
                 <div class="double-row">
                     <div class="input-group"><label>Localização</label><input type="text" id="localizacao" value="Arapongas/PR" required></div>
-                    <div class="input-group"><label>Faixa de Preço</label><input type="text" id="faixaPreco" value="A partir de R$ 220.000" required></div>
+                    <div class="input-group"><label>Faixa de Preço</label><input type="text" id="faixaPreco" value="A partir de R$ 200.000" required></div>
                 </div>
                 <div class="input-group"><label>Público-Alvo Sugerido (opcional)</label><input type="text" id="publicoAlvo" placeholder="Ex: Jovens casais, investidores..."></div>
                 <button type="submit" class="btn" id="generateCampaignBtn"><i class="fas fa-magic"></i> Gerar Campanha</button>
@@ -211,7 +230,7 @@
             });
         });
 
-        // ========== SIMULADOR (mantido igual) ==========
+        // ========== SIMULADOR ==========
         function formatarMoeda(v) { return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
         function parseMoeda(s) { if(!s) return 0; let limpo = s.replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,''); let n=parseFloat(limpo); return isNaN(n)?0:n; }
         function aplicarMascaraMoeda(i) { let v=parseMoeda(i.value); if(!isNaN(v)) i.value = v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -457,107 +476,72 @@
         const dadosIniciais = calcular();
         atualizarTabela(dadosIniciais);
 
-        // ========== GERADOR DE CAMPANHA (ESTRATÉGIA AVANÇADA) ==========
+        // ========== GERADOR DE CAMPANHA (MCMV) ==========
         const campaignForm = document.getElementById('campaignForm');
         const campaignResult = document.getElementById('campaignResult');
 
-        function gerarCampanhaEstrategica(dados) {
-            const precoNumerico = parseFloat(dados.faixaPreco.replace(/[^\d,]/g, '').replace(',', '.')) || 220000;
+        function gerarCampanhaMCMV(dados) {
+            const precoNumerico = parseFloat(dados.faixaPreco.replace(/[^\d,]/g, '').replace(',', '.')) || 200000;
             const cidade = dados.localizacao.split('/')[0].trim();
             const uf = dados.localizacao.split('/')[1]?.trim() || 'PR';
-            const tipo = dados.tipoImovel.toLowerCase();
             const caracteristicas = dados.caracteristicas.toLowerCase();
             
-            // Determina se é alto padrão ou econômico baseado no preço
-            const isAltoPadrao = precoNumerico > 350000;
-            const isEconomico = precoNumerico < 200000;
+            let faixaMCMV, jurosMCMV, subsidioMax, publicoPrincipal;
+            if (precoNumerico <= 170000) {
+                faixaMCMV = "Faixa 1 (subsídio máximo)"; jurosMCMV = "4,25% a 5,0% a.a."; subsidioMax = "até R$ 55.000"; publicoPrincipal = "Famílias com renda bruta de até R$ 2.850,00";
+            } else if (precoNumerico <= 264000) {
+                faixaMCMV = "Faixa 2 (subsídio parcial)"; jurosMCMV = "5,5% a 7,0% a.a."; subsidioMax = "até R$ 29.000"; publicoPrincipal = "Famílias com renda bruta de até R$ 4.700,00";
+            } else if (precoNumerico <= 350000) {
+                faixaMCMV = "Faixa 3 (sem subsídio, juros reduzidos)"; jurosMCMV = "7,5% a 8,5% a.a."; subsidioMax = "não se aplica"; publicoPrincipal = "Famílias com renda bruta de até R$ 8.000,00";
+            } else {
+                faixaMCMV = "Acima do MCMV (mercado convencional)"; jurosMCMV = "a partir de 10,5% a.a."; subsidioMax = "não se aplica"; publicoPrincipal = "Famílias com renda acima de R$ 8.000,00 e investidores";
+            }
+
             const temLazer = caracteristicas.includes('piscina') || caracteristicas.includes('salão');
-            const temVaga = caracteristicas.includes('vaga') || caracteristicas.includes('garagem');
+            let cplEstimado, taxaConversao, orcamentoMensal;
+            if (precoNumerico <= 170000) { cplEstimado = 3.5; taxaConversao = 0.08; orcamentoMensal = 800; }
+            else if (precoNumerico <= 264000) { cplEstimado = 4.5; taxaConversao = 0.06; orcamentoMensal = 1000; }
+            else if (precoNumerico <= 350000) { cplEstimado = 5.5; taxaConversao = 0.05; orcamentoMensal = 1200; }
+            else { cplEstimado = 7.0; taxaConversao = 0.04; orcamentoMensal = 1500; }
             
-            // Estimativas de mercado
-            const cpcEstimado = isAltoPadrao ? 2.5 : 1.2;
-            const cplEstimado = isAltoPadrao ? 12 : 5.5;
-            const taxaConversao = isAltoPadrao ? 0.03 : 0.05;
-            
-            const orcamentoMensal = isAltoPadrao ? 2500 : 1200;
             const leadsEstimados = Math.round(orcamentoMensal / cplEstimado);
             const vendasEstimadas = Math.round(leadsEstimados * taxaConversao);
-            const roi = ((vendasEstimadas * precoNumerico * 0.05) / orcamentoMensal).toFixed(1); // comissão 5%
+            const comissaoEstimada = precoNumerico * 0.05;
+            const roi = ((vendasEstimadas * comissaoEstimada) / orcamentoMensal).toFixed(1);
 
-            return `📊 **ANÁLISE DE MERCADO E POSICIONAMENTO**
-O imóvel (${dados.tipoImovel}) está localizado em ${cidade}/${uf}, uma região com demanda ${isEconomico ? 'aquecida para o segmento econômico' : 'seletiva para empreendimentos diferenciados'}. ${temLazer ? 'A presença de área de lazer é um forte diferencial competitivo.' : ''} ${temVaga ? 'A disponibilidade de vaga de garagem atende a uma necessidade crítica do público local.' : ''}
-O preço de R$ ${precoNumerico.toLocaleString('pt-BR')} posiciona o imóvel no segmento ${isAltoPadrao ? 'premium' : (isEconomico ? 'econômico' : 'intermediário')}, competindo diretamente com ${isAltoPadrao ? 'lançamentos de alto padrão' : 'imóveis usados e outros lançamentos populares'}.
+            return `🏠 **ANÁLISE DE ENQUADRAMENTO - MINHA CASA MINHA VIDA**
+O imóvel (${dados.tipoImovel}) com valor de R$ ${precoNumerico.toLocaleString('pt-BR')} se enquadra na **${faixaMCMV}** do programa Minha Casa Minha Vida.
+- **Taxa de juros:** ${jurosMCMV}
+- **Subsídio máximo:** ${subsidioMax}
+- **Público elegível:** ${publicoPrincipal}
 
-🎯 **PÚBLICO-ALVO E PERSONAS DETALHADAS**
-1. **Casal Jovem (25-34 anos)** - "Lucas e Ana"
-   - Renda conjunta: R$ 6.000 - R$ 12.000.
-   - Comportamento: Pesquisam imóveis pelo Instagram e portais (Zap, VivaReal). Valorizam lazer, segurança e facilidade de pagamento.
-   - Gatilhos: "Primeira casa própria", "Sair do aluguel", "Realização de sonho".
+📊 **POSICIONAMENTO EM ${cidade.toUpperCase()}/${uf}**
+${precoNumerico <= 264000 ? 'Demanda reprimida por habitação popular, com alta absorção devido aos subsídios.' : 'Atrativo para famílias com FGTS e renda estável.'} ${temLazer ? 'Área de lazer como diferencial.' : ''}
 
-2. **Investidor Local (35-55 anos)** - "Seu Carlos"
-   - Renda mensal: acima de R$ 15.000.
-   - Comportamento: Analisa ROI, potencial de valorização e liquidez. Presente em grupos de investimento no Facebook e LinkedIn.
-   - Gatilhos: "Rentabilidade superior à poupança", "Patrimônio sólido", "Valorização garantida pela localização".
+🎯 **PERSONAS PRINCIPAIS**
+1. **Família (Faixa 1/2)**: Renda até R$ 4.700. Canais: Facebook, WhatsApp.
+2. **Jovem Casal (Faixa 2/3)**: Renda R$ 5k-8k, FGTS. Canais: Instagram, portais.
+3. **Investidor**: Renda > R$ 8k. Canais: LinkedIn, grupos de investimento.
 
-3. **Família em Expansão (30-45 anos)** - "Família Silva"
-   - Renda mensal: R$ 8.000 - R$ 18.000.
-   - Comportamento: Buscam espaço, segurança e proximidade de escolas. Usam Google para pesquisar e Facebook para ver recomendações.
-   - Gatilhos: "Mais espaço para as crianças", "Condomínio seguro", "Qualidade de vida".
+📢 **ESTRATÉGIA DE FUNIL**
+- **Topo**: Meta Ads segmentado por renda e interesses, Google Ads com palavras-chave MCMV.
+- **Meio**: Remarketing com oferta de tour virtual e simulador de financiamento.
+- **Fundo**: WhatsApp com condições especiais e urgência ("últimas unidades").
 
-📢 **ESTRATÉGIA DE FUNIL COMPLETO**
-**Topo de Funil (Atração):**
-- Anúncios em vídeo no Instagram Reels e TikTok mostrando a planta decorada e as áreas de lazer (CPM ~R$ 15).
-- Posts patrocinados no Facebook com depoimentos de moradores (engajamento).
-- Google Ads com palavras-chave de descoberta: "apartamento com piscina ${cidade}", "imóveis na planta ${uf}".
+💰 **PLANO DE MÍDIA (ORÇAMENTO R$ ${orcamentoMensal})**
+| Canal | Investimento | CPC/CPM | Leads |
+|---|---|---|---|
+| Meta Ads | R$ ${Math.round(orcamentoMensal*0.6)} | CPC R$ 0,80 | ~${Math.round(leadsEstimados*0.7)} |
+| Google Ads | R$ ${Math.round(orcamentoMensal*0.3)} | CPC R$ 1,50 | ~${Math.round(leadsEstimados*0.2)} |
+| Remarketing | R$ ${Math.round(orcamentoMensal*0.1)} | CPM R$ 10 | ~${Math.round(leadsEstimados*0.1)} |
 
-**Meio de Funil (Consideração):**
-- Remarketing para quem assistiu aos vídeos ou visitou o site, com oferta de tour virtual ou e-book "Guia do Primeiro Imóvel".
-- Anúncios no YouTube com stories de clientes que já compraram (prova social).
-- Parceria com influenciadores locais de decoração e lifestyle para mostrar o imóvel.
+📈 **PROJEÇÃO DE RESULTADOS**
+- **CPL:** R$ ${cplEstimado.toFixed(2)} | **Leads:** ${leadsEstimados} | **Vendas:** ${vendasEstimadas}
+- **Comissão média:** R$ ${comissaoEstimada.toFixed(2)} | **ROI:** ${roi}x
 
-**Fundo de Funil (Decisão):**
-- Campanha de WhatsApp com condições especiais para quem agendar visita em 48h.
-- Anúncios de retargeting no Google Display com chamada "Últimas unidades" ou "Condições exclusivas de lançamento".
-- E-mail marketing para leads quentes com simulação de financiamento personalizada.
-
-💰 **PLANO DE MÍDIA E INVESTIMENTO (MENSAL)**
-| Canal | Objetivo | Investimento | CPC/CPM Estimado | Resultado Esperado |
-|---|---|---|---|---|
-| Instagram/Facebook Ads | Geração de Leads | R$ ${Math.round(orcamentoMensal*0.5)} | CPC R$ ${cpcEstimado.toFixed(2)} | ~${Math.round(leadsEstimados*0.6)} leads |
-| Google Ads (Rede de Pesquisa) | Intenção de Compra | R$ ${Math.round(orcamentoMensal*0.3)} | CPC R$ ${(cpcEstimado*1.8).toFixed(2)} | ~${Math.round(leadsEstimados*0.3)} leads |
-| Remarketing + Display | Recuperação | R$ ${Math.round(orcamentoMensal*0.2)} | CPM R$ 12,00 | ~${Math.round(leadsEstimados*0.1)} leads |
-| **TOTAL** | | **R$ ${orcamentoMensal}** | | **~${leadsEstimados} leads** |
-
-📈 **PROJEÇÃO DE RESULTADOS E ROI**
-- **Custo por Lead (CPL):** R$ ${cplEstimado.toFixed(2)}
-- **Leads mensais:** ${leadsEstimados}
-- **Taxa de conversão estimada:** ${(taxaConversao*100).toFixed(0)}%
-- **Vendas mensais projetadas:** ${vendasEstimadas}
-- **Comissão média por venda (5%):** R$ ${(precoNumerico*0.05).toFixed(2)}
-- **ROI estimado:** ${roi}x (para cada R$ 1 investido, retorno de R$ ${roi} em comissão)
-
-📝 **COPY PARA ANÚNCIOS DE ALTA PERFORMANCE**
-**Modelo 1 (Facebook/Instagram - Topo de Funil):**
-*Título:* Realize o sonho do apartamento próprio em ${cidade}! 🏡✨
-*Texto:* Conheça o ${dados.tipoImovel} de 43m² com 2 quartos, lazer completo e condições imperdíveis. Toque no link e agende uma visita agora mesmo!
-*CTA:* Saiba Mais
-
-**Modelo 2 (Google Ads - Palavras de Intenção):**
-*Título:* Apartamento na Planta ${cidade} | A partir de R$ ${precoNumerico.toLocaleString('pt-BR')}
-*Descrição:* 2 quartos, piscina, salão de festas. Financiamento facilitado. Agende sua visita!
-*CTA:* Agendar Visita
-
-**Modelo 3 (Remarketing - Fundo de Funil):**
-*Título:* Ainda pensando no apartamento em ${cidade}? 🤔
-*Texto:* Não perca as condições especiais de lançamento. Últimas unidades com preço fixo. Garanta já o seu!
-*CTA:* Eu Quero!
-
-🔁 **NUTRIÇÃO E PÓS-VENDA**
-- **Sequência de e-mails:** (1) Boas-vindas + tour virtual; (2) Depoimentos de clientes; (3) Condições de financiamento; (4) Convite para evento no estande.
-- **WhatsApp:** Envio da simulação personalizada em PDF (gerada pelo nosso simulador) e follow-up em 24h.
-- **Relatório mensal:** Acompanhamento do CPL, taxa de conversão e sugestões de otimização.
-
-*Esta estratégia foi gerada automaticamente com base em dados de mercado e melhores práticas de agências especializadas em marketing imobiliário.*`;
+📝 **COPY SUGERIDA**
+*Facebook/Instagram:* "Realize o sonho da casa própria com subsídio! 🏡 A partir de R$ ${precoNumerico.toLocaleString('pt-BR')}. Simule agora!"
+*Google:* "Apartamento MCMV ${cidade} | Subsídio de até R$ 55 mil | Agende sua visita"`;
         }
 
         campaignForm.addEventListener('submit', (e) => {
@@ -566,11 +550,85 @@ O preço de R$ ${precoNumerico.toLocaleString('pt-BR')} posiciona o imóvel no s
             const caracteristicas = document.getElementById('caracteristicas').value;
             const localizacao = document.getElementById('localizacao').value;
             const faixa = document.getElementById('faixaPreco').value;
-            
             const dados = { tipoImovel: tipo, caracteristicas, localizacao, faixaPreco: faixa };
-            const campanha = gerarCampanhaEstrategica(dados);
-            campaignResult.textContent = campanha;
+            campaignResult.textContent = gerarCampanhaMCMV(dados);
             campaignResult.style.display = 'block';
+        });
+
+        // ========== NOVA ABA: ONDE INVESTIR ==========
+        const investForm = document.getElementById('investForm');
+        const investResult = document.getElementById('investResult');
+
+        function gerarPlanoInvestimento(dados) {
+            const preco = parseMoeda(dados.valorImovel) || 200000;
+            const cidade = dados.localizacao.split('/')[0].trim();
+            let orcamento = parseMoeda(dados.orcamento) || 0;
+            
+            // Define orçamento sugerido baseado no preço do imóvel
+            let orcamentoSugerido, cplEstimado, taxaConversao;
+            if (preco <= 170000) { orcamentoSugerido = 800; cplEstimado = 3.5; taxaConversao = 0.08; }
+            else if (preco <= 264000) { orcamentoSugerido = 1000; cplEstimado = 4.5; taxaConversao = 0.06; }
+            else if (preco <= 350000) { orcamentoSugerido = 1200; cplEstimado = 5.5; taxaConversao = 0.05; }
+            else { orcamentoSugerido = 1500; cplEstimado = 7.0; taxaConversao = 0.04; }
+            
+            if (orcamento === 0) orcamento = orcamentoSugerido;
+            
+            const leads = Math.round(orcamento / cplEstimado);
+            const vendas = Math.round(leads * taxaConversao);
+            const comissao = preco * 0.05;
+            const roi = ((vendas * comissao) / orcamento).toFixed(1);
+
+            return `📊 **ANÁLISE DE CANAIS PARA ${cidade.toUpperCase()}**
+Imóvel de R$ ${formatarMoeda(preco)}. Orçamento analisado: R$ ${formatarMoeda(orcamento)}.
+
+🎯 **CANAIS RECOMENDADOS E DIVISÃO DO ORÇAMENTO**
+| Canal | % do Orçamento | Valor | Objetivo |
+|---|---|---|---|
+| **Meta Ads (Facebook/Instagram)** | 60% | R$ ${formatarMoeda(orcamento*0.6)} | Geração de Leads (formulário) |
+| **Google Ads (Rede de Pesquisa)** | 30% | R$ ${formatarMoeda(orcamento*0.3)} | Intenção de compra (palavras-chave MCMV) |
+| **Remarketing** | 10% | R$ ${formatarMoeda(orcamento*0.1)} | Recuperação de visitantes |
+
+⚠️ **Canais NÃO recomendados para este perfil:**
+- **Panfletagem/Outdoor:** Custo por lead altíssimo, impossível mensurar.
+- **Rádio/TV:** Público muito disperso, baixa segmentação.
+- **TikTok/YouTube Ads:** Melhor usar organicamente (conteúdo gratuito). Invista apenas se sobrar verba.
+
+📈 **PROJEÇÃO DE RESULTADOS**
+- **Custo por Lead (CPL) estimado:** R$ ${cplEstimado.toFixed(2)}
+- **Leads mensais esperados:** ${leads}
+- **Taxa de conversão (MCMV):** ${(taxaConversao*100).toFixed(0)}%
+- **Vendas mensais projetadas:** ${vendas}
+- **Comissão média por venda:** R$ ${formatarMoeda(comissao)}
+- **ROI estimado:** ${roi}x (retorno de R$ ${roi} para cada R$ 1 investido)
+
+💡 **ESTRATÉGIA DE CONTEÚDO (ORGÂNICO)**
+- **Instagram Reels:** Vídeos de 15s mostrando a planta decorada e área de lazer.
+- **Facebook:** Posts em grupos de bairro/comunidade sobre o programa MCMV.
+- **WhatsApp Business:** Catálogo de imóveis e respostas automáticas com o PDF da simulação.
+
+🔧 **CONFIGURAÇÃO DO PÚBLICO NO META ADS**
+- **Localização:** ${cidade} + 20km
+- **Idade:** 25-55 anos
+- **Interesses:** Minha Casa Minha Vida, FGTS, Casa própria, Imóveis, Financiamento imobiliário.
+- **Renda:** R$ 2.500 a R$ 7.500 (compatível com as faixas do MCMV).
+
+🔍 **PALAVRAS-CHAVE SUGERIDAS (GOOGLE ADS)**
+- "apartamento MCMV ${cidade}"
+- "imóvel com subsídio ${cidade}"
+- "financiamento minha casa minha vida ${cidade}"
+- "apartamento na planta ${cidade} preço popular"
+
+*Análise gerada com base em benchmarks do mercado imobiliário e melhores práticas de agências especializadas.*`;
+        }
+
+        investForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const valor = document.getElementById('invValorImovel').value;
+            const localizacao = document.getElementById('invLocalizacao').value;
+            const orcamento = document.getElementById('invOrcamento').value;
+            const dados = { valorImovel: valor, localizacao, orcamento };
+            investResult.textContent = gerarPlanoInvestimento(dados);
+            investResult.style.display = 'block';
         });
     })();
 </script>
