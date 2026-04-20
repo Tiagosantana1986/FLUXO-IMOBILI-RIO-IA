@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Tiago Sant'ana | Simulador de Fluxo + IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tab-bar { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
+        .tab-btn { background: white; border: 1px solid #e2e8f0; padding: 14px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #475569; }
+        .tab-btn.active { background: #1e4b6e; color: white; border-color: #1e4b6e; box-shadow: 0 10px 20px -5px rgba(30,75,110,0.3); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .hero { padding: 20px 0 10px; text-align: center; }
+        .hero-badge { background: #c6993b; color: #0b1e33; padding: 6px 20px; border-radius: 40px; font-weight: 700; font-size: 0.9rem; display: inline-block; margin-bottom: 20px; letter-spacing: 1px; }
+        .hero h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; color: #0b1e33; }
+        .hero h1 span { color: #1e4b6e; border-bottom: 4px solid #c6993b; }
+        .hero p { font-size: 1.1rem; color: #334155; max-width: 700px; margin: 0 auto 24px; }
+
+        .btn { display: inline-block; background: #1e4b6e; color: white; padding: 14px 34px; border-radius: 60px; font-weight: 600; font-size: 1rem; border: none; cursor: pointer; box-shadow: 0 10px 20px -5px rgba(30,75,110,0.2); transition: all 0.2s; text-decoration: none; }
+        .btn i { margin-left: 8px; }
+        .btn:hover { background: #0f2e4a; transform: translateY(-2px); }
+        .btn-outline { background: white; color: #1e4b6e; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1px solid #dde3ed; }
+        .btn-success { background: #0f7b5a; }
+
+        .features { display: grid; grid-template-columns: repeat(3,1fr); gap: 25px; margin: 40px 0; }
+        .feature-card { background: white; padding: 28px 20px; border-radius: 28px; box-shadow: 0 15px 25px -8px rgba(0,0,0,0.04); border: 1px solid #eef2f8; text-align: center; }
+        .feature-icon { background: #eef4ff; width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; color: #1e4b6e; font-size: 28px; }
+        .feature-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+
+        .about-section { background: white; border-radius: 36px; padding: 40px; margin: 40px 0; box-shadow: 0 20px 30px -8px rgba(0,0,0,0.04); border: 1px solid #eef2f8; }
+        .about-grid { display: flex; gap: 30px; align-items: center; }
+        .about-icon { background: #1e4b6e; width: 90px; height: 90px; border-radius: 26px; display: flex; align-items: center; justify-content: center; color: #c6993b; font-size: 42px; }
+        .about-content h2 { font-size: 2rem; margin-bottom: 12px; }
+        .stats { display: flex; gap: 35px; margin-top: 20px; }
+        .stat-item h3 { font-size: 2rem; color: #1e4b6e; }
+
+        .footer-contact { background: #0b1e33; color: white; border-radius: 36px; padding: 30px 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+
+        .calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .calculator-container { background: white; border-radius: 36px; padding: 30px; box-shadow: 0 20px 30px -8px rgba(0,0,0,0.04); border: 1px solid #eef2f8; }
+        .input-group { margin-bottom: 22px; }
+        label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-bottom: 8px; display: block; }
+        input, select, textarea { width: 100%; padding: 14px 18px; background: #fafcff; border: 1.5px solid #e2e8f0; border-radius: 24px; font-size: 1rem; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #c6993b; box-shadow: 0 0 0 3px rgba(198,153,59,0.1); background: white; }
+        .double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .triple-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .street-row { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
+        .toggle-group { display: flex; align-items: center; gap: 20px; margin-top: 8px; }
+        .baloes-container { background: #f1f5f9; padding: 20px; border-radius: 24px; margin: 20px 0; }
+        .balao-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .btn-icon { background: none; border: none; color: #ef4444; font-size: 1.5rem; cursor: pointer; }
+        .btn-add { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        .result-box { background: #f0f6fe; border-radius: 28px; padding: 24px; margin: 30px 0; }
+        .result-value { font-size: 2.5rem; font-weight: 700; color: #1e4b6e; }
+        .evolucao-container { margin-top: 30px; border: 1px solid #e2e8f0; border-radius: 24px; overflow: auto; max-height: 400px; background: white; }
+        .evolucao-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .evolucao-table th { background: #1e293b; color: white; padding: 12px 8px; position: sticky; top: 0; text-align: right; }
+        .evolucao-table td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; }
+
+        .campaign-card { background: white; border-radius: 32px; padding: 32px; box-shadow: 0 20px 30px -8px rgba(0,0,0,0.04); }
+        .loading-spinner { text-align: center; padding: 30px; }
+        .result-content { white-space: pre-wrap; font-size: 1rem; line-height: 1.6; color: #1e293b; background: #f0f6fe; border-radius: 24px; padding: 24px; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .features { grid-template-columns: 1fr; }
+            .double-row, .triple-row, .street-row { grid-template-columns: 1fr; }
+            .about-grid { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <span class="hero-badge">SIMULADOR DE FLUXO IMOBILIÁRIO</span>
+        <h1>Transforme simulações em <span>negócios fechados</span></h1>
+        <p>Calcule cenários complexos e gere campanhas de marketing com inteligência artificial.</p>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="simulador"><i class="fas fa-calculator"></i> Simulador de Fluxo</button>
+        <button class="tab-btn" data-tab="campanha"><i class="fas fa-robot"></i> Gerador de Campanha IA</button>
+    </div>
+
+    <div id="tab-simulador" class="tab-content active">
+        <div class="calculator-container">
+            <h3 style="margin-bottom: 20px; color: #1e4b6e;">Dados do Cliente</h3>
+            <div class="input-group"><label>👤 Nome Completo</label><input type="text" id="nomeCliente" value="João Silva"></div>
+            <div class="double-row">
+                <div class="input-group"><label>🆔 RG</label><input type="text" id="rgCliente" value="8.364.876-7"></div>
+                <div class="input-group"><label>📄 CPF</label><input type="text" id="cpfCliente" value="048.702.679-93"></div>
+            </div>
+            <div class="double-row">
+                <div class="input-group"><label>📞 Telefone</label><input type="text" id="telefoneCliente" value="(43) 99999-9999"></div>
+                <div class="input-group"><label>📧 E-mail</label><input type="email" id="emailCliente" value="joao@email.com"></div>
+            </div>
+            <div class="street-row">
+                <div class="input-group"><label>🏠 Rua</label><input type="text" id="ruaCliente" value="Rua das Flores"></div>
+                <div class="input-group"><label>Nº</label><input type="text" id="numeroCliente" value="257"></div>
+            </div>
+            <div class="double-row">
+                <div class="input-group"><label>🌆 Cidade</label><input type="text" id="cidadeCliente" value="Arapongas"></div>
+                <div class="input-group"><label>🗺️ UF</label>
+                    <select id="ufCliente">
+                        <option value="">Selecione</option>
+                        <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR" selected>Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group"><label>🏢 Nome do Empreendimento</label><input type="text" id="nomeEmpreendimento" value="RESIDENCIAL MADRID"></div>
+
+            <div class="double-row">
+                <div class="input-group"><label>💰 Valor do Imóvel (R$)</label><input type="text" id="valorImovel" class="moeda" value="100.000,00"></div>
+                <div class="input-group"><label>🤝 Sinal / Ato (R$)</label><input type="text" id="sinalAto" class="moeda" value="1.000,00"></div>
+            </div>
+
+            <div class="baloes-container"><label>📆 Balões</label><div id="baloesList"></div><button class="btn-add" id="addBalaoBtn"><i class="fas fa-plus-circle"></i> Adicionar Balão</button></div>
+
+            <div class="input-group">
+                <label>🏦 Entrada (Valor Total) (R$)</label><input type="text" id="entradaValor" class="moeda" value="12.000,00">
+                <div class="toggle-group">
+                    <label><input type="radio" name="tipoEntrada" value="vista" checked> À Vista</label>
+                    <label><input type="radio" name="tipoEntrada" value="parcelada"> Parcelada</label>
+                    <div style="margin-left:20px;"><label>Nº Parcelas: <input type="number" id="entradaParcelas" min="1" value="12" class="numero" style="width:80px;" disabled></label></div>
+                </div>
+            </div>
+
+            <div class="triple-row">
+                <div class="input-group"><label>🏁 Prazo (meses)</label><input type="number" id="prazoFinanciamento" min="1" value="60" class="numero"></div>
+                <div class="input-group"><label>📊 Sistema</label><select id="tipoFinanciamento"><option value="price">Tabela Price</option><option value="sac" selected>SAC</option></select></div>
+                <div class="input-group"><label>📈 Juros (%)</label><input type="text" id="taxaJuros" class="moeda" value="5,50"></div>
+            </div>
+            <div class="input-group"><label>🔄 Período dos Juros</label><select id="periodoJuros"><option value="ano" selected>ao Ano</option><option value="mes">ao Mês</option></select></div>
+
+            <button class="btn" id="calcularBtn"><i class="fas fa-calculator"></i> Calcular Simulação</button>
+
+            <div class="result-box">
+                <div class="result-label">PRIMEIRA PARCELA DO FINANCIAMENTO</div>
+                <div class="result-value" id="parcelaFinanciamento">R$ 0,00</div>
+                <div style="display:flex; justify-content:space-between; margin-top:20px;"><span>Total Pago (Fin.): <span id="totalFinanciamento">R$ 0,00</span></span><span>Total Juros: <span id="totalJuros">R$ 0,00</span></span></div>
+            </div>
+
+            <div class="evolucao-container"><table class="evolucao-table"><thead><tr><th>Mês</th><th>Parcela (R$)</th><th>Juros (R$)</th><th>Amortização (R$)</th><th>Saldo Devedor (R$)</th></tr></thead><tbody id="evolucaoBody"></tbody></table></div>
+
+            <div class="btn-group" style="display:flex; gap:15px; margin-top:25px;">
+                <button class="btn btn-outline" id="visualizarPDFBtn"><i class="fas fa-file-pdf"></i> Visualizar PDF</button>
+                <button class="btn btn-success" id="baixarPDFBtn"><i class="fas fa-download"></i> Baixar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-campanha" class="tab-content">
+        <div class="campaign-card">
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-robot" style="color:#c6993b;"></i> Gerar Campanha com IA</h3>
+            <form id="campaignForm">
+                <div class="input-group"><label>Tipo de Imóvel</label><input type="text" id="tipoImovel" value="Apartamento na planta" required></div>
+                <div class="input-group"><label>Características</label><textarea id="caracteristicas" rows="3" required>43m², 2 quartos, sala, cozinha, banheiro, salão de festas, piscina</textarea></div>
+                <div class="double-row">
+                    <div class="input-group"><label>Localização</label><input type="text" id="localizacao" value="Arapongas/PR" required></div>
+                    <div class="input-group"><label>Faixa de Preço</label><input type="text" id="faixaPreco" value="A partir de R$ 220.000" required></div>
+                </div>
+                <div class="input-group"><label>Público-Alvo Sugerido (opcional)</label><input type="text" id="publicoAlvo" placeholder="Ex: Jovens casais, investidores..."></div>
+                <button type="submit" class="btn" id="generateCampaignBtn"><i class="fas fa-magic"></i> Gerar Campanha</button>
+            </form>
+            <div id="campaignLoading" style="display:none;" class="loading-spinner"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Gerando estratégia...</p></div>
+            <div id="campaignResult" style="display:none;" class="result-content"></div>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <div class="about-grid">
+            <div class="about-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="about-content">
+                <span style="color:#c6993b; font-weight:700;">SOBRE O CRIADOR</span>
+                <h2>Tiago Sant'ana</h2>
+                <p>Mais de 8 anos no mercado imobiliário. Esta ferramenta une cálculo preciso e inteligência artificial para corretores de alto desempenho.</p>
+                <div class="stats">
+                    <div class="stat-item"><h3>8+</h3><span>Anos</span></div>
+                    <div class="stat-item"><h3>500+</h3><span>Negociações</span></div>
+                    <div class="stat-item"><h3>100+</h3><span>Clientes</span></div>
+                </div>
+                <div style="margin-top:20px; background:#f0f6fe; padding:8px 20px; border-radius:40px; display:inline-block;"><i class="fas fa-id-card" style="color:#c6993b;"></i> CRECI F45549/PR</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-contact">
+        <div><i class="fas fa-user"></i> Tiago Sant'ana  |  <i class="fas fa-phone-alt"></i> (43) 99984-1190  |  <i class="fab fa-instagram"></i> @tiagosantana_1986</div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+        // Abas
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+            });
+        });
+
+        // ========== SIMULADOR ==========
+        function formatarMoeda(v) { return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+        function parseMoeda(s) { if(!s) return 0; let limpo = s.replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,''); let n=parseFloat(limpo); return isNaN(n)?0:n; }
+        function aplicarMascaraMoeda(i) { let v=parseMoeda(i.value); if(!isNaN(v)) i.value = v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+        function ajustarNumero(i) { let v=parseInt(i.value,10); if(!isNaN(v)) i.value=v; else i.value=0; }
+        document.querySelectorAll('.moeda').forEach(i => i.addEventListener('blur', () => aplicarMascaraMoeda(i)));
+        document.querySelectorAll('.numero').forEach(i => i.addEventListener('blur', () => ajustarNumero(i)));
+
+        const radioVista = document.querySelector('input[value="vista"]'), radioParcelada = document.querySelector('input[value="parcelada"]'), entradaParcelasInput = document.getElementById('entradaParcelas');
+        radioVista.addEventListener('change', () => entradaParcelasInput.disabled = true);
+        radioParcelada.addEventListener('change', () => entradaParcelasInput.disabled = false);
+
+        const baloesList = document.getElementById('baloesList');
+        function criarBalaoItem(valor='', mes='') {
+            const div = document.createElement('div'); div.className='balao-item';
+            div.innerHTML = `<input type="text" placeholder="Valor (R$)" class="moeda balao-valor" value="${valor}" style="flex:2;">
+                             <input type="number" placeholder="Mês" class="numero balao-mes" value="${mes}" min="1" style="flex:1;">
+                             <button class="btn-icon remover-balao"><i class="fas fa-trash-alt"></i></button>`;
+            div.querySelector('.moeda').addEventListener('blur', function(){ aplicarMascaraMoeda(this); });
+            div.querySelector('.numero').addEventListener('blur', function(){ ajustarNumero(this); });
+            div.querySelector('.remover-balao').addEventListener('click', () => div.remove());
+            return div;
+        }
+        document.getElementById('addBalaoBtn').addEventListener('click', () => baloesList.appendChild(criarBalaoItem()));
+        baloesList.addEventListener('click', e => { if(e.target.closest('.remover-balao')) e.target.closest('.balao-item').remove(); });
+
+        function calcular() {
+            const nomeEmp = document.getElementById('nomeEmpreendimento').value;
+            const valorImovel = parseMoeda(document.getElementById('valorImovel').value);
+            const sinalAto = parseMoeda(document.getElementById('sinalAto').value);
+            const entradaValor = parseMoeda(document.getElementById('entradaValor').value);
+            const entradaParcelada = radioParcelada.checked;
+            const entradaParcelas = entradaParcelada ? parseInt(entradaParcelasInput.value,10) : 1;
+            const prazo = parseInt(document.getElementById('prazoFinanciamento').value,10);
+            const tipoFin = document.getElementById('tipoFinanciamento').value;
+            const taxaJuros = parseMoeda(document.getElementById('taxaJuros').value);
+            const periodoJuros = document.getElementById('periodoJuros').value;
+
+            const baloes = [];
+            document.querySelectorAll('.balao-item').forEach(item => {
+                const v = parseMoeda(item.querySelector('.balao-valor').value);
+                const m = parseInt(item.querySelector('.balao-mes').value,10);
+                if(!isNaN(v) && !isNaN(m) && v>0 && m>0) baloes.push({valor:v, mes:m});
+            });
+
+            let saldo = valorImovel - sinalAto;
+            baloes.forEach(b => saldo -= b.valor);
+            saldo -= entradaValor;
+            if(saldo < 0) saldo = 0;
+
+            if(saldo <=0 || prazo<=0) {
+                document.getElementById('parcelaFinanciamento').innerText = formatarMoeda(0);
+                document.getElementById('totalFinanciamento').innerText = formatarMoeda(0);
+                document.getElementById('totalJuros').innerText = formatarMoeda(0);
+                return { parcelas: [], saldo:0, totalPago:0, totalJuros:0, nomeEmp };
+            }
+
+            let taxaMensal = periodoJuros==='ano' ? Math.pow(1+taxaJuros/100,1/12)-1 : taxaJuros/100;
+            let parcelas = [], totalPago=0, totalJuros=0;
+            if(tipoFin==='price'){
+                if(taxaMensal===0){
+                    const p = saldo/prazo;
+                    for(let i=0;i<prazo;i++) parcelas.push({parcela:p, juros:0, amortizacao:p, saldo: saldo - i*p});
+                    totalPago = saldo;
+                } else {
+                    const fator = Math.pow(1+taxaMensal, prazo);
+                    const p = saldo * (taxaMensal * fator)/(fator-1);
+                    let sd = saldo;
+                    for(let i=1;i<=prazo;i++){
+                        const j = sd * taxaMensal;
+                        const a = p - j;
+                        sd -= a;
+                        parcelas.push({parcela:p, juros:j, amortizacao:a, saldo: Math.max(0,sd)});
+                    }
+                    totalPago = p * prazo;
+                    totalJuros = totalPago - saldo;
+                }
+            } else {
+                const amort = saldo/prazo;
+                let sd = saldo;
+                for(let i=0;i<prazo;i++){
+                    const j = sd * taxaMensal;
+                    const p = amort + j;
+                    parcelas.push({parcela:p, juros:j, amortizacao:amort, saldo: sd-amort});
+                    totalJuros += j;
+                    sd -= amort;
+                }
+                totalPago = saldo + totalJuros;
+            }
+
+            document.getElementById('parcelaFinanciamento').innerText = formatarMoeda(parcelas[0]?.parcela || 0);
+            document.getElementById('totalFinanciamento').innerText = formatarMoeda(totalPago);
+            document.getElementById('totalJuros').innerText = formatarMoeda(totalJuros);
+            return { parcelas, saldo, totalPago, totalJuros, nomeEmp, valorImovel, sinalAto, baloes, entradaValor, entradaParcelada, entradaParcelas, prazo, tipoFin, taxaJuros, periodoJuros };
+        }
+
+        function atualizarTabela(dados) {
+            const tbody = document.getElementById('evolucaoBody');
+            tbody.innerHTML = '';
+            dados.parcelas.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${idx+1}</td><td>${p.parcela.toFixed(2)}</td><td>${p.juros.toFixed(2)}</td><td>${p.amortizacao.toFixed(2)}</td><td>${p.saldo.toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('calcularBtn').addEventListener('click', () => { const dados = calcular(); atualizarTabela(dados); });
+
+        const { jsPDF } = window.jspdf;
+        let pdfBlobUrl = null;
+
+        async function gerarPDFBlob() {
+            const dados = calcular();
+            atualizarTabela(dados);
+            const cliente = {
+                nome: document.getElementById('nomeCliente').value,
+                rg: document.getElementById('rgCliente').value,
+                cpf: document.getElementById('cpfCliente').value,
+                telefone: document.getElementById('telefoneCliente').value,
+                email: document.getElementById('emailCliente').value,
+                rua: document.getElementById('ruaCliente').value,
+                numero: document.getElementById('numeroCliente').value,
+                cidade: document.getElementById('cidadeCliente').value,
+                uf: document.getElementById('ufCliente').value
+            };
+            const enderecoCompleto = `${cliente.rua}, Nº ${cliente.numero} - ${cliente.cidade}/${cliente.uf}`;
+            const localData = `${cliente.cidade}/${cliente.uf}`;
+
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const pageHeight = doc.internal.pageSize.height;
+            const margem = 15;
+            let y = 20;
+
+            function cabecalho() {
+                doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(30,75,110);
+                doc.text('SIMULADOR DE FLUXO IMOBILIÁRIO', margem, y); y+=6;
+                doc.setFontSize(9); doc.setTextColor(100);
+                doc.text(dados.nomeEmp, margem, y);
+                doc.setFontSize(8);
+                doc.text(`Corretor: Tiago Sant'ana  CRECI: F45549/PR  Tel: (43) 99984-1190  @tiagosantana_1986`, margem, y+4);
+                y+=10;
+                doc.setDrawColor(200); doc.line(margem, y, 195, y); y+=6;
+            }
+
+            cabecalho();
+            doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('Cliente:', margem, y); y+=4;
+            doc.setFont('helvetica','normal');
+            doc.text(cliente.nome, margem, y); y+=4;
+            if(cliente.cpf) doc.text(`CPF: ${cliente.cpf}`, margem, y); y+=4;
+            if(cliente.rg) doc.text(`RG: ${cliente.rg}`, margem, y); y+=4;
+            doc.text(`Telefone: ${cliente.telefone}`, margem, y); y+=4;
+            doc.text(`E-mail: ${cliente.email}`, margem, y); y+=4;
+            doc.text(`Endereço: ${enderecoCompleto}`, margem, y); y+=6;
+
+            doc.setFontSize(9);
+            function addLinha(label, valor) { doc.text(label, margem, y); doc.text(valor, 120, y, {align:'right'}); y+=4; }
+            addLinha('Valor do Imóvel', formatarMoeda(dados.valorImovel));
+            addLinha('Sinal / Ato', formatarMoeda(dados.sinalAto));
+            dados.baloes.forEach((b,i) => addLinha(`Balão ${i+1} (Mês ${b.mes})`, formatarMoeda(b.valor)));
+            addLinha('Entrada', `${formatarMoeda(dados.entradaValor)} ${dados.entradaParcelada ? 'em '+dados.entradaParcelas+'x' : '(à vista)'}`);
+            addLinha('Saldo Financiado', formatarMoeda(dados.saldo));
+            y+=4; doc.line(margem, y, 195, y); y+=6;
+            doc.setFont('helvetica','bold'); doc.text('Financiamento', margem, y); y+=5;
+            doc.setFont('helvetica','normal');
+            addLinha('Prazo', `${dados.prazo} meses`);
+            addLinha('Sistema', dados.tipoFin==='price'?'Tabela Price':'SAC');
+            addLinha('Juros', `${dados.taxaJuros.toFixed(2)}% ${dados.periodoJuros==='ano'?'a.a.':'a.m.'}`);
+            y+=4; doc.line(margem, y, 195, y); y+=6;
+
+            doc.setFontSize(11); doc.setTextColor(30,75,110); doc.text('Evolução do Financiamento (Mês a Mês)', margem, y); y+=6;
+            doc.setFontSize(8);
+            doc.text('Mês', margem, y);
+            doc.text('Parcela (R$)', 40, y, {align:'right'});
+            doc.text('Juros (R$)', 70, y, {align:'right'});
+            doc.text('Amortização (R$)', 100, y, {align:'right'});
+            doc.text('Saldo Devedor (R$)', 135, y, {align:'right'});
+            y+=3; doc.line(margem, y, 195, y); y+=4;
+
+            dados.parcelas.forEach((p, idx) => {
+                if(y > 270) { doc.addPage(); y=20; cabecalho(); }
+                doc.text(String(idx+1), margem, y);
+                doc.text(p.parcela.toFixed(2), 40, y, {align:'right'});
+                doc.text(p.juros.toFixed(2), 70, y, {align:'right'});
+                doc.text(p.amortizacao.toFixed(2), 100, y, {align:'right'});
+                doc.text(p.saldo.toFixed(2), 135, y, {align:'right'});
+                y+=3.5;
+            });
+
+            const alturaTermo = 100;
+            if (y + alturaTermo > pageHeight - 20) { doc.addPage(); y = 20; } else { y += 10; }
+
+            doc.setFontSize(14); doc.setTextColor(30,75,110); doc.setFont('helvetica','bold');
+            doc.text(`FLUXO IMOBILIÁRIO DE PAGAMENTO DO ${dados.nomeEmp.toUpperCase()}`, 105, y, {align:'center'}); y+=12;
+            doc.setFontSize(12); doc.text('TERMO DE ADESÃO', 105, y, {align:'center'}); y+=10;
+            doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(0);
+            const paragrafo1 = `Pelo presente instrumento, o(a) CONTRATANTE, ${cliente.nome}, portador do CPF nº ${cliente.cpf} e da Cédula de Identidade nº ${cliente.rg}, residente e domiciliado à ${enderecoCompleto}, DECLARA ter recebido e concordado com o fluxo de pagamento do ${dados.nomeEmp}, conforme condições financeiras apresentadas na tabela acima.`;
+            const paragrafo2 = `Declara, ainda, estar ciente dos valores, prazos e formas de pagamento, comprometendo-se ao seu integral cumprimento.`;
+            const paragrafo3 = `Este termo constitui formalização prévia à elaboração do contrato definitivo.`;
+            const paragrafo4 = `Por estarem de acordo, firmam o presente termo.`;
+            [paragrafo1, paragrafo2, paragrafo3, paragrafo4].forEach(p => {
+                const lines = doc.splitTextToSize(p, 165);
+                doc.text(lines, margem, y);
+                y += lines.length * 3.8 + 2;
+            });
+            y += 6;
+            doc.text(`${localData}, _____ de ___________________ de 20____.`, margem, y); y+=10;
+            doc.text('__________________________________________', margem, y); y+=5;
+            doc.text('Cliente', margem, y); y+=4;
+            doc.text(`${cliente.nome}`, margem, y); y+=4;
+            doc.text(`CPF: ${cliente.cpf}  RG: ${cliente.rg}`, margem, y); y+=8;
+            doc.text('__________________________________________', margem, y); y+=5;
+            doc.text('Corretor', margem, y); y+=4;
+            doc.text('Tiago dos Santos Sant’ana', margem, y); y+=4;
+            doc.text('CRECI: F45549/PR', margem, y);
+
+            const totalPages = doc.internal.getNumberOfPages();
+            for(let i=1; i<=totalPages; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8); doc.setTextColor(150);
+                doc.text(`Página ${i} de ${totalPages}`, 105, pageHeight-8, {align:'center'});
+            }
+            return doc.output('blob');
+        }
+
+        async function visualizarPDF() {
+            const blob = await gerarPDFBlob();
+            if(pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
+            pdfBlobUrl = URL.createObjectURL(blob);
+            window.open(pdfBlobUrl, '_blank');
+        }
+        async function baixarPDF() {
+            const blob = await gerarPDFBlob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'simulacao_fluxo_imobiliario.pdf'; a.click();
+            URL.revokeObjectURL(url);
+        }
+        document.getElementById('visualizarPDFBtn').addEventListener('click', visualizarPDF);
+        document.getElementById('baixarPDFBtn').addEventListener('click', baixarPDF);
+
+        baloesList.appendChild(criarBalaoItem('1.000,00','6'));
+        baloesList.appendChild(criarBalaoItem('1.000,00','12'));
+        baloesList.appendChild(criarBalaoItem('1.000,00','18'));
+        baloesList.appendChild(criarBalaoItem('1.000,00','24'));
+        const dadosIniciais = calcular();
+        atualizarTabela(dadosIniciais);
+
+        // ========== GERADOR DE CAMPANHA (POLLINATIONS AI - SEM CHAVE) ==========
+        const campaignForm = document.getElementById('campaignForm');
+        const campaignResult = document.getElementById('campaignResult');
+        const campaignLoading = document.getElementById('campaignLoading');
+
+        campaignForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tipo = document.getElementById('tipoImovel').value;
+            const caracteristicas = document.getElementById('caracteristicas').value;
+            const localizacao = document.getElementById('localizacao').value;
+            const faixa = document.getElementById('faixaPreco').value;
+            const publico = document.getElementById('publicoAlvo').value || 'não especificado';
+            
+            campaignResult.style.display = 'none';
+            campaignLoading.style.display = 'block';
+
+            try {
+                const prompt = `Você é um especialista em marketing imobiliário. Crie uma campanha para:\nTipo: ${tipo}\nCaracterísticas: ${caracteristicas}\nLocalização: ${localizacao}\nPreço: ${faixa}\nPúblico sugerido: ${publico}\n\nInclua: 1. Público-alvo detalhado; 2. Copy para anúncio (título e descrição); 3. Canais recomendados; 4. Projeção de investimento (orçamento, CPL, leads e vendas estimadas). Responda em português claro.`;
+
+                const response = await fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: prompt }],
+                        model: 'openai',
+                        temperature: 0.7,
+                        max_tokens: 1500
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro na API (${response.status}): ${errorText}`);
+                }
+
+                const data = await response.text();
+                campaignResult.textContent = data;
+                campaignResult.style.display = 'block';
+            } catch (error) {
+                console.error('Erro:', error);
+                campaignResult.textContent = `Erro ao gerar campanha: ${error.message}`;
+                campaignResult.style.display = 'block';
+            } finally {
+                campaignLoading.style.display = 'none';
+            }
+        });
+    })();
+</script>
+</body>
+</html>
