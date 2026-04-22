@@ -221,9 +221,16 @@
                 <label>Valor do Imóvel (R$)</label>
                 <div class="input-wrapper"><span>R$</span><input type="number" id="valorImovel" placeholder="0,00" step="1000"></div>
             </div>
-            <div class="input-group">
-                <label>Sinal de Negócio (R$) - pago no ato</label>
-                <div class="input-wrapper"><span>R$</span><input type="number" id="sinal" placeholder="0,00" step="1000"></div>
+            
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Termo de Adesão (R$)</label>
+                    <div class="input-wrapper"><span>R$</span><input type="number" id="termoAdesao" placeholder="0,00" step="1000"></div>
+                </div>
+                <div class="input-group">
+                    <label>Sinal de Negócio (R$)</label>
+                    <div class="input-wrapper"><span>R$</span><input type="number" id="sinal" placeholder="0,00" step="1000"></div>
+                </div>
             </div>
 
             <div class="divider"></div>
@@ -375,6 +382,7 @@
         const emailClienteInput = document.getElementById('emailCliente');
         const nomeInput = document.getElementById('nomeEmpreendimento');
         const valorImovelInput = document.getElementById('valorImovel');
+        const termoAdesaoInput = document.getElementById('termoAdesao');
         const sinalInput = document.getElementById('sinal');
         const tipoEntradaSelect = document.getElementById('tipoEntrada');
         const entradaAvistaDiv = document.getElementById('entradaAvista');
@@ -444,6 +452,7 @@
 
         function calcularFluxo() {
             const vImovel = parseFloat(valorImovelInput.value)||0;
+            const termoAdesao = parseFloat(termoAdesaoInput.value)||0;
             const sinal = parseFloat(sinalInput.value)||0;
             const chaveV = parseFloat(chaveValorInput.value)||0;
             let mesChave = parseInt(mesChaveInput.value)||0;
@@ -460,7 +469,7 @@
             } else {
                 const prazo = parseInt(prazoInput.value)||0;
                 if(prazo<=0){ alert('Prazo necessário.'); return; }
-                const saldo = vImovel - sinal;
+                const saldo = vImovel - termoAdesao - sinal;
                 if(modo==='sac'){
                     const amort = saldo/prazo;
                     for(let i=1;i<=prazo;i++){ const j = (saldo - amort*(i-1))*taxa; parcelas.push({mes:i, valor:amort+j}); }
@@ -472,7 +481,8 @@
             if(mesChave===0) mesChave = parcelas.length ? Math.max(...parcelas.map(p=>p.mes)) : 0;
 
             let eventos = [];
-            if(sinal>0) eventos.push({mes:0, tipo:'sinal', valor:sinal});
+            if(termoAdesao > 0) eventos.push({mes:0, tipo:'termo', valor:termoAdesao});
+            if(sinal > 0) eventos.push({mes:0, tipo:'sinal', valor:sinal});
             parcelas.forEach(p=> eventos.push({mes:p.mes, tipo:'parcela', valor:p.valor}));
             if(tipoEntradaSelect.value==='avista'){
                 const ve = parseFloat(entradaValorInput.value)||0, me = parseInt(entradaMesInput.value);
@@ -488,9 +498,10 @@
             if(chaveV>0 && mesChave>0) eventos.push({mes:mesChave, tipo:'chave', valor:chaveV});
             eventos.sort((a,b)=> a.mes - b.mes);
 
-            let saldo = vImovel - sinal, jurosTotal = 0, pagoBruto = sinal;
+            let saldo = vImovel - termoAdesao - sinal, jurosTotal = 0, pagoBruto = termoAdesao + sinal;
             const linhas = [];
-            if(sinal>0) linhas.push({mes:0, evento:'Sinal de Negócio', valorPago:sinal, juros:0, amortizacao:sinal, saldo});
+            if(termoAdesao > 0) linhas.push({mes:0, evento:'Termo de Adesão', valorPago:termoAdesao, juros:0, amortizacao:termoAdesao, saldo});
+            if(sinal > 0) linhas.push({mes:0, evento:'Sinal de Negócio', valorPago:sinal, juros:0, amortizacao:sinal, saldo});
 
             for(let ev of eventos){
                 if(ev.mes===0) continue;
@@ -520,6 +531,7 @@
                 params: { 
                     emp: nomeInput.value.trim() || 'Não informado', 
                     vImovel: formatReal(vImovel), 
+                    termo: formatReal(termoAdesao),
                     sinal: formatReal(sinal), 
                     parcelas: modo === 'personalizado' ? `${numParcelasInput.value||0}x ${formatReal(parseFloat(valorParcelaInput.value)||0)}` : `${prazoInput.value||0} parcelas (${modo.toUpperCase()})`, 
                     chave: `${formatReal(chaveV)} (mês ${mesChave})`, 
@@ -559,6 +571,7 @@
                 head: [['Item', 'Valor']],
                 body: [
                     ['Valor do Imóvel', ultimaSimulacao.params.vImovel],
+                    ['Termo de Adesão', ultimaSimulacao.params.termo],
                     ['Sinal de Negócio', ultimaSimulacao.params.sinal],
                     ['Parcelas Mensais', ultimaSimulacao.params.parcelas],
                     ['Parcela Chave', ultimaSimulacao.params.chave],
