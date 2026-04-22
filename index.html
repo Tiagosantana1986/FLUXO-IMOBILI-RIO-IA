@@ -1,4 +1,4 @@
-lang="pt-BR">
+g="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -622,11 +622,3 @@ lang="pt-BR">
     calcularBtn.addEventListener('click', calcularFluxo);
     pdfBtn.addEventListener('click', function(){ if (!ultimaSimulacao.linhas.length) calcularFluxo(); gerarPDF(); });
     window.addEventListener('DOMContentLoaded', function(){
-        corpoTabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Preencha os dados e clique em CALCULAR FLUXO</td></tr>';
-        totalPagoSpan.textContent = 'R$ 0,00'; totalJurosSpan.textContent = 'R$ 0,00'; saldoFinalSpan.textContent = 'R$ 0,00';
-        atualizarTitulo();
-    });
-})();
-</script>
-</body>
-</html>
